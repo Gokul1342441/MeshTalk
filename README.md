@@ -1,6 +1,6 @@
-# Real-time Chat SDK
+# MeshTalk
 
-A powerful real-time chat SDK built with NestJS, WebSocket, and Elasticsearch integration.
+A real-time chat SDK with Elasticsearch integration built with NestJS and Socket.IO.
 
 ## Features
 
@@ -9,135 +9,78 @@ A powerful real-time chat SDK built with NestJS, WebSocket, and Elasticsearch in
 - User presence (online/offline status)
 - Typing indicators
 - Message history
-- Full-text search using Elasticsearch
+- Elasticsearch integration for message search
 - TypeScript support
 
 ## Installation
 
 ```bash
-npm install @your-org/chat-sdk
+npm install @gokul1342441/MeshTalk
 ```
 
 ## Quick Start
 
 ```typescript
-import { ChatClientImpl, ChatConfig } from '@your-org/chat-sdk';
+import { ChatClientImpl, ChatConfig } from '@gokul1342441/MeshTalk';
 
-// Configure the chat client
-const config: ChatConfig = {
+// Initialize the chat client
+const chatConfig: ChatConfig = {
   elasticsearch: {
     node: 'http://localhost:9200',
     auth: {
       username: 'elastic',
-      password: 'changeme',
-    },
+      password: 'changeme'
+    }
   },
   port: 9090,
-  host: 'localhost',
+  host: 'localhost'
 };
 
-// Create chat client instance
-const chatClient = new ChatClientImpl(config);
+const chatClient = new ChatClientImpl(chatConfig);
 
 // Connect to the chat server
-await chatClient.connect('user1', 'John Doe');
+await chatClient.connect('user123', 'John Doe');
 
 // Join a channel
 await chatClient.joinChannel('general');
 
-// Set up event listeners
+// Send a message
+await chatClient.sendMessage('general', 'Hello, world!');
+
+// Listen for new messages
 chatClient.onMessage((message) => {
   console.log(`New message from ${message.userId}: ${message.content}`);
 });
 
+// Listen for user status changes
 chatClient.onUserStatus((data) => {
   console.log(`User ${data.userId} is ${data.status}`);
 });
 
-chatClient.onTyping((data) => {
-  if (data.isTyping) {
-    console.log(`User ${data.userId} is typing...`);
-  }
-});
-
-// Send a message
-await chatClient.sendMessage('general', 'Hello, everyone!');
-
 // Search messages
-const searchResults = await chatClient.searchMessages('hello');
-
-// Get channel history
-const history = await chatClient.getChannelHistory('general');
+const searchResults = await chatClient.searchMessages('hello', 'general');
 ```
 
-## API Reference
+## API Documentation
 
 ### ChatClient
 
-#### Methods
-
 - `connect(userId: string, userName: string): Promise<void>`
-  - Connects to the chat server
-  - Parameters:
-    - `userId`: Unique identifier for the user
-    - `userName`: Display name of the user
-
 - `disconnect(): void`
-  - Disconnects from the chat server
-
 - `joinChannel(channelId: string): Promise<void>`
-  - Joins a chat channel
-  - Parameters:
-    - `channelId`: Unique identifier for the channel
-
 - `leaveChannel(channelId: string): Promise<void>`
-  - Leaves a chat channel
-  - Parameters:
-    - `channelId`: Unique identifier for the channel
-
 - `sendMessage(channelId: string, content: string, type?: string): Promise<void>`
-  - Sends a message to a channel
-  - Parameters:
-    - `channelId`: Channel to send the message to
-    - `content`: Message content
-    - `type`: Message type (default: 'text')
-
-- `searchMessages(query: string, channelId?: string): Promise<Message[]>`
-  - Searches for messages
-  - Parameters:
-    - `query`: Search query
-    - `channelId`: Optional channel filter
-
-- `getChannelHistory(channelId: string): Promise<Message[]>`
-  - Gets message history for a channel
-  - Parameters:
-    - `channelId`: Channel to get history for
-
-#### Event Handlers
-
 - `onMessage(callback: (message: Message) => void): void`
-  - Handles new messages
-
 - `onUserStatus(callback: (data: { userId: string; status: string }) => void): void`
-  - Handles user status changes
-
 - `onTyping(callback: (data: { userId: string; isTyping: boolean }) => void): void`
-  - Handles typing indicators
+- `searchMessages(query: string, channelId?: string): Promise<Message[]>`
+- `getChannelHistory(channelId: string): Promise<Message[]>`
 
-### Types
+## Configuration
+
+The SDK requires the following configuration:
 
 ```typescript
-interface Message {
-  id: string;
-  channelId: string;
-  userId: string;
-  content: string;
-  type: string;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata?: Record<string, any>;
-}
-
 interface ChatConfig {
   elasticsearch: {
     node: string;
@@ -151,19 +94,6 @@ interface ChatConfig {
 }
 ```
 
-## Development
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-```bash
-   npm run start:dev
-   ```
-
 ## License
 
 MIT
-# MeshTalk

@@ -1,5 +1,5 @@
 {
-  "name": "@your-org/chat-sdk",
+  "name": "@gokul1342441/MeshTalk",
   "version": "0.1.0",
   "description": "Real-time chat SDK with Elasticsearch integration",
   "main": "dist/index.js",
@@ -21,7 +21,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "chat",
@@ -30,8 +31,16 @@
     "elasticsearch",
     "sdk"
   ],
-  "author": "Your Name",
+  "author": "Gokul Raj",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gokul1342441/MeshTalk"
+  },
+  "bugs": {
+    "url": "https://github.com/Gokul1342441/MeshTalk/issues"
+  },
+  "homepage": "https://github.com/Gokul1342441/MeshTalk#readme",
   "dependencies": {
     "@elastic/elasticsearch": "^9.0.2",
     "@nestjs/common": "^11.0.1",

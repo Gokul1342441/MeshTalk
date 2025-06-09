@@ -1,9 +1,17 @@
 {
   "name": "@gokul134241/meshtalk",
-  "version": "0.1.0",
+  "version": "0.1.01",
   "description": "Real-time chat SDK with Elasticsearch integration",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "README.md"
@@ -29,7 +37,8 @@
     "realtime",
     "websocket",
     "elasticsearch",
-    "sdk"
+    "sdk",
+    "nextjs"
   ],
   "author": "Gokul Raj",
   "license": "MIT",
@@ -41,6 +50,11 @@
     "url": "https://github.com/Gokul1342441/MeshTalk/issues"
   },
   "homepage": "https://github.com/Gokul1342441/MeshTalk#readme",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "next": ">=12.0.0"
+  },
   "dependencies": {
     "@elastic/elasticsearch": "^9.0.2",
     "@nestjs/common": "^11.0.1",
@@ -66,6 +80,8 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",

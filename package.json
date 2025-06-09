@@ -1,5 +1,5 @@
 {
-  "name": "@gokul1342441/MeshTalk",
+  "name": "@gokul1342441/meshtalk",
   "version": "0.1.0",
   "description": "Real-time chat SDK with Elasticsearch integration",
   "main": "dist/index.js",

@@ -15,13 +15,13 @@ A real-time chat SDK with Elasticsearch integration built with NestJS and Socket
 ## Installation
 
 ```bash
-npm install @gokul1342441/MeshTalk
+npm install @gokul1342441/meshtalk
 ```
 
 ## Quick Start
 
 ```typescript
-import { ChatClientImpl, ChatConfig } from '@gokul1342441/MeshTalk';
+import { ChatClientImpl, ChatConfig } from '@gokul1342441/meshtalk';
 
 // Initialize the chat client
 const chatConfig: ChatConfig = {

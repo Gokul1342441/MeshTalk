@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test Client</title>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .message { margin: 5px 0; padding: 5px; border-radius: 5px; }
+        .message.sent { background: #e3f2fd; }
+        .message.received { background: #f5f5f5; }
+        .status { color: #666; font-style: italic; }
+        .typing { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h2>Chat Test Client</h2>
+    <div>
+        <input type="text" id="userId" placeholder="Enter User ID" value="user1">
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+    <div>
+        <input type="text" id="channelId" placeholder="Enter Channel ID" value="channel1">
+        <button onclick="joinChannel()">Join Channel</button>
+        <button onclick="leaveChannel()">Leave Channel</button>
+    </div>
+    <div id="messages"></div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type a message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="typingStatus"></div>
+
+    <script>
+        let socket;
+        let currentChannel;
+        let typingTimeout;
+
+        function connect() {
+            const userId = document.getElementById('userId').value;
+            socket = io('http://localhost:9090/chat', {
+                auth: { userId },
+                transports: ['websocket'],
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+
+            socket.on('connect', () => {
+                addMessage('System', 'Connected to server', 'status');
+            });
+
+            socket.on('connect_error', (error) => {
+                addMessage('System', `Connection error: ${error.message}`, 'status');
+            });
+
+            socket.on('disconnect', () => {
+                addMessage('System', 'Disconnected from server', 'status');
+            });
+
+            socket.on('userStatus', (data) => {
+                addMessage('System', `User ${data.userId} is ${data.status}`, 'status');
+            });
+
+            socket.on('channelHistory', (messages) => {
+                messages.forEach(msg => {
+                    addMessage(msg.userId, msg.content, msg.userId === userId ? 'sent' : 'received');
+                });
+            });
+
+            socket.on('newMessage', (message) => {
+                addMessage(message.userId, message.content, message.userId === userId ? 'sent' : 'received');
+            });
+
+            socket.on('userTyping', (data) => {
+                const typingDiv = document.getElementById('typingStatus');
+                if (data.isTyping) {
+                    typingDiv.textContent = `User ${data.userId} is typing...`;
+                } else {
+                    typingDiv.textContent = '';
+                }
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+            }
+        }
+
+        function joinChannel() {
+            if (!socket) {
+                alert('Please connect first!');
+                return;
+            }
+            currentChannel = document.getElementById('channelId').value;
+            socket.emit('joinChannel', { channelId: currentChannel });
+            addMessage('System', `Joined channel: ${currentChannel}`, 'status');
+        }
+
+        function leaveChannel() {
+            if (!socket || !currentChannel) {
+                alert('Not in a channel!');
+                return;
+            }
+            socket.emit('leaveChannel', { channelId: currentChannel });
+            addMessage('System', `Left channel: ${currentChannel}`, 'status');
+            currentChannel = null;
+        }
+
+        function sendMessage() {
+            if (!socket || !currentChannel) {
+                alert('Please connect and join a channel first!');
+                return;
+            }
+            const content = document.getElementById('messageInput').value;
+            if (!content) return;
+
+            socket.emit('sendMessage', {
+                channelId: currentChannel,
+                content,
+                type: 'text'
+            });
+
+            document.getElementById('messageInput').value = '';
+        }
+
+        function addMessage(userId, content, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = `${userId}: ${content}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Handle typing indicator
+        document.getElementById('messageInput').addEventListener('input', () => {
+            if (!socket || !currentChannel) return;
+
+            clearTimeout(typingTimeout);
+            socket.emit('typing', { channelId: currentChannel, isTyping: true });
+
+            typingTimeout = setTimeout(() => {
+                socket.emit('typing', { channelId: currentChannel, isTyping: false });
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
